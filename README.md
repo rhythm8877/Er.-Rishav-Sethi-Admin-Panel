@@ -1,17 +1,84 @@
-# React + Vite
+# Er.-Rishav-Sethi-Admin-Panel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite admin panel for managing blogs, events, users, and more.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Install Dependencies
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Environment Variables
 
-## Expanding the ESLint configuration
+Create a `.env` file in the root directory with your Firebase configuration:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# Er.-Risshav-Sethi-Admin-Panel
+```env
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
+VITE_FIREBASE_PROJECT_ID=your_project_id_here
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
+VITE_FIREBASE_APP_ID=your_app_id_here
+```
+
+You can copy `.env.example` to `.env` and fill in your values.
+
+### 3. Run Development Server
+
+```bash
+npm run dev
+```
+
+## Deployment to Netlify
+
+### Setting Environment Variables on Netlify
+
+**Important:** For Firebase to work on Netlify, you must set the environment variables in the Netlify dashboard:
+
+1. Go to your Netlify site dashboard
+2. Navigate to **Site settings** → **Environment variables**
+3. Add the following variables (with the `VITE_` prefix):
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+
+4. After adding the variables, **trigger a new deploy** (either by pushing to your connected branch or manually redeploying)
+
+### Build Settings
+
+- **Build command:** `npm run build`
+- **Publish directory:** `dist`
+
+The `_redirects` file in the `public` folder is automatically included in the build to handle SPA routing.
+
+## Troubleshooting
+
+### Firebase Not Working
+
+If data is not loading:
+
+1. **Check browser console** for error messages about missing environment variables
+2. **Verify environment variables** are set correctly in Netlify dashboard
+3. **Redeploy** after adding/changing environment variables
+4. **Check Firebase console** to ensure your Firestore database has the correct collections (`blogs`, `events`, etc.)
+
+### 404 Errors on Refresh
+
+The `_redirects` file should handle this. If you still see 404s:
+- Ensure `public/_redirects` exists with: `/*    /index.html   200`
+- Redeploy your site
+
+## Features
+
+- User authentication
+- Blog management
+- Event management
+- User management
+- Connect section
+- Carousel management
+- Light/Dark theme toggle
