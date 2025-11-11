@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiTrash2 } from 'react-icons/fi';
 import Select from 'react-select';
 import { collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, isFirebaseReady } from '../../firebase';
 import './Blogs.css';
 
 const fallbackImage = 'https://placehold.co/80x80?text=No+Img';
@@ -101,6 +101,13 @@ const Blogs = () => {
   useEffect(() => {
     setLoading(true);
     setError('');
+    
+    if (!isFirebaseReady() || !db) {
+      setError('Firebase is not configured. Please set environment variables in Netlify dashboard.');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const q = collection(db, 'blogs');
       const unsubscribe = onSnapshot(
@@ -163,6 +170,10 @@ const Blogs = () => {
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
+    if (!isFirebaseReady() || !db) {
+      setError('Firebase is not configured. Cannot delete blog.');
+      return;
+    }
     setDeleting(true);
     setError('');
     try {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FiSearch, FiTrash2 } from 'react-icons/fi';
 import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db, callDeleteUser } from '../../firebase';
+import { db, callDeleteUser, isFirebaseReady } from '../../firebase';
 import './Users.css';
 
 const fallbackAvatar = 'https://placehold.co/80x80?text=No+Img';
@@ -24,6 +24,15 @@ const Users = () => {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError('');
+    
+    if (!isFirebaseReady() || !db) {
+      setError('Firebase is not configured. Please set environment variables in Netlify dashboard.');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const q = query(collection(db, 'users'), orderBy('fullName'));
       const unsubscribe = onSnapshot(

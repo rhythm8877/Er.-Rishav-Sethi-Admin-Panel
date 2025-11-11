@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FiSearch, FiTrash2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
-import { db } from '../../firebase';
+import { db, isFirebaseReady } from '../../firebase';
 import './Events.css';
 
 const fallbackImage = 'https://placehold.co/80x80?text=No+Img';
@@ -100,6 +100,13 @@ const Events = () => {
   useEffect(() => {
     setLoading(true);
     setError('');
+    
+    if (!isFirebaseReady() || !db) {
+      setError('Firebase is not configured. Please set environment variables in Netlify dashboard.');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const q = collection(db, 'events');
       const unsubscribe = onSnapshot(
