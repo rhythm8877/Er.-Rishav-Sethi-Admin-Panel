@@ -44,6 +44,8 @@ const Carousel = () => {
   const [error, setError] = useState('');
   const [order, setOrder] = useState('latest');
   const fileInputRef = useRef(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchImages = async () => {
     setLoading(true);
@@ -126,17 +128,25 @@ const Carousel = () => {
     }
   };
 
-  const handleDelete = async (fullPath) => {
-    if (!fullPath) return;
-    const confirm = window.confirm('Delete this image from carousel?');
-    if (!confirm) return;
+  const openDeleteModal = (image) => setPendingDelete(image);
+  const closeDeleteModal = () => {
+    if (deleting) return;
+    setPendingDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete?.fullPath) return;
+    setDeleting(true);
     setError('');
     try {
-      const ref = storageRef(storage, fullPath);
+      const ref = storageRef(storage, pendingDelete.fullPath);
       await deleteObject(ref);
+      setPendingDelete(null);
       await fetchImages();
     } catch (err) {
       setError(err?.message || 'Failed to delete image');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -211,7 +221,7 @@ const Carousel = () => {
                     <FiPlus />
                     <span>Open</span>
                   </a>
-                  <button type="button" className="carousel-btn carousel-btn-danger" onClick={() => handleDelete(img.fullPath)}>
+                  <button type="button" className="carousel-btn carousel-btn-danger" onClick={() => openDeleteModal(img)}>
                     <FiTrash2 />
                     <span>Delete</span>
                   </button>
@@ -221,6 +231,24 @@ const Carousel = () => {
           )}
         </div>
       </div>
+      {pendingDelete && (
+        <div className="carousel-modal-overlay" role="presentation" onClick={closeDeleteModal}>
+          <div className="carousel-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <h2 className="carousel-modal-title">Confirm deletion</h2>
+            <p className="carousel-modal-text">
+              Are you sure you want to delete the image "{pendingDelete.name}" from the carousel?
+            </p>
+            <div className="carousel-modal-actions">
+              <button type="button" className="carousel-btn" onClick={closeDeleteModal} disabled={deleting}>
+                Cancel
+              </button>
+              <button type="button" className="carousel-btn carousel-btn-danger" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? 'Deleting…' : 'Delete image'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

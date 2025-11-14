@@ -221,4 +221,43 @@
   color: var(--text-tertiary);
 }
 
+.carousel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.carousel-modal {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
+}
+
+.carousel-modal-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.carousel-modal-text {
+  margin: 0 0 1rem 0;
+  color: var(--text-secondary);
+}
+
+.carousel-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
 

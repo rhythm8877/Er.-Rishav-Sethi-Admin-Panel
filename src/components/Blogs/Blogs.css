@@ -135,7 +135,7 @@
   cursor: pointer;
 }
 
-.blogs-btn:not(.blogs-btn-primary):hover {
+.blogs-btn:not(.blogs-btn-primary):not(.blogs-btn-danger):hover {
   background: var(--dashboard-bg);
 }
 

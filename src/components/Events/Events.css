@@ -135,7 +135,7 @@
   cursor: pointer;
 }
 
-.events-btn:not(.events-btn-primary):hover {
+.events-btn:not(.events-btn-primary):not(.events-btn-danger):hover {
   background: var(--dashboard-bg);
 }
 
