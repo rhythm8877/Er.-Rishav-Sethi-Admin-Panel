@@ -15,6 +15,12 @@ const todayISO = () => {
   return `${year}-${month}-${day}`;
 };
 
+const decodeHtmlEntities = (text) => {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
 const CreateBlogs = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -106,7 +112,8 @@ const CreateBlogs = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const strippedContent = content.replace(/<[^>]*>/g, '').trim();
+    // Strip HTML tags and decode HTML entities
+    const strippedContent = decodeHtmlEntities(content.replace(/<[^>]*>/g, '')).trim();
     if (!title.trim()) {
       alert('Please enter a blog title.');
       return;

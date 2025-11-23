@@ -78,13 +78,22 @@ const parseDateForSort = (value) => {
   }
 };
 
+const decodeHtmlEntities = (text) => {
+  if (!text || typeof text !== 'string') return text;
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
 const getPreview = (content = '', expanded) => {
   if (!content) return '-';
   const formatted = formatValue(content);
   if (formatted === '-' || expanded) return formatted;
   const text = typeof content === 'string' ? content.trim() : String(content || '');
-  if (text.length <= 160) return text;
-  return `${text.slice(0, 160)}…`;
+  // Decode HTML entities before displaying
+  const decodedText = decodeHtmlEntities(text);
+  if (decodedText.length <= 160) return decodedText;
+  return `${decodedText.slice(0, 160)}…`;
 };
 
 const Blogs = () => {
