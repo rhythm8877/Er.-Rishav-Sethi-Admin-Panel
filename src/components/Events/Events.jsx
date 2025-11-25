@@ -77,13 +77,35 @@ const parseDateForSort = (value) => {
   }
 };
 
+const decodeHtmlEntities = (text) => {
+  if (!text || typeof text !== 'string') return text;
+  if (typeof document === 'undefined') return text;
+  
+  // Handle double-encoded entities by decoding multiple times until no change
+  let decoded = text;
+  let previous = '';
+  let iterations = 0;
+  const maxIterations = 10; // Safety limit
+  
+  while (decoded !== previous && iterations < maxIterations) {
+    previous = decoded;
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = decoded;
+    decoded = textarea.value;
+    iterations++;
+  }
+  
+  return decoded;
+};
+
 const getPreview = (content = '', expanded) => {
   if (!content) return '-';
   const formatted = formatValue(content);
   if (formatted === '-' || expanded) return formatted;
   const text = typeof content === 'string' ? content.trim() : String(content || '');
-  if (text.length <= 160) return text;
-  return `${text.slice(0, 160)}…`;
+  const decodedText = decodeHtmlEntities(text);
+  if (decodedText.length <= 160) return decodedText;
+  return `${decodedText.slice(0, 160)}…`;
 };
 
 const Events = () => {

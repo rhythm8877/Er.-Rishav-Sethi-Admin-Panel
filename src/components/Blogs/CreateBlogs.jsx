@@ -16,9 +16,24 @@ const todayISO = () => {
 };
 
 const decodeHtmlEntities = (text) => {
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = text;
-  return textarea.value;
+  if (!text || typeof text !== 'string') return text;
+  if (typeof document === 'undefined') return text;
+  
+  // Handle double-encoded entities by decoding multiple times until no change
+  let decoded = text;
+  let previous = '';
+  let iterations = 0;
+  const maxIterations = 10; // Safety limit
+  
+  while (decoded !== previous && iterations < maxIterations) {
+    previous = decoded;
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = decoded;
+    decoded = textarea.value;
+    iterations++;
+  }
+  
+  return decoded;
 };
 
 const CreateBlogs = () => {

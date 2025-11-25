@@ -1,8 +1,8 @@
-import imageCompression from 'browser-image-compression';
 import { Editor } from '@tinymce/tinymce-react';
+import imageCompression from 'browser-image-compression';
 import { addDoc, collection, getDocs, limit, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, storage } from '../../firebase';
 import './CreateEvents.css';
@@ -13,6 +13,27 @@ const todayISO = () => {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+const decodeHtmlEntities = (text) => {
+  if (!text || typeof text !== 'string') return text;
+  if (typeof document === 'undefined') return text;
+  
+  // Handle double-encoded entities by decoding multiple times until no change
+  let decoded = text;
+  let previous = '';
+  let iterations = 0;
+  const maxIterations = 10; // Safety limit
+  
+  while (decoded !== previous && iterations < maxIterations) {
+    previous = decoded;
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = decoded;
+    decoded = textarea.value;
+    iterations++;
+  }
+  
+  return decoded;
 };
 
 const CreateEvents = () => {
@@ -26,17 +47,6 @@ const CreateEvents = () => {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const editorRef = useRef(null);
-
-  const readableDate = useMemo(() => {
-    const value = new Date(dateVisited);
-    if (Number.isNaN(value.getTime())) {
-      return '-';
-    }
-    const dd = String(value.getDate()).padStart(2, '0');
-    const mm = String(value.getMonth() + 1).padStart(2, '0');
-    const yy = String(value.getFullYear()).slice(-2);
-    return `${dd}/${mm}/${yy}`;
-  }, [dateVisited]);
 
   const handleImageChange = async (event) => {
     const file = event.target.files?.[0];
@@ -104,7 +114,7 @@ const CreateEvents = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const strippedContent = content.replace(/<[^>]*>/g, '').trim();
+    const strippedContent = decodeHtmlEntities(content.replace(/<[^>]*>/g, '')).trim();
     if (!title.trim()) {
       alert('Please enter an event title.');
       return;
